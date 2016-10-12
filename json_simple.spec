@@ -3,7 +3,7 @@
 
 Name:           %{?scl_prefix}json_simple
 Version:        1.1.1
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Simple Java toolkit for JSON
 License:        ASL 2.0
 URL:            http://code.google.com/p/json-simple/
@@ -15,12 +15,12 @@ Source0:        json-simple-1.1.1-src-svn.tar.gz
 #https://code.google.com/p/json-simple/issues/detail?id=97
 Patch0:         json-simple-hash-java-1.8.patch
 
-BuildRequires: %{?scl_mvn_prefix}maven-local
-BuildRequires: mvn(junit:junit)
-BuildRequires: %{?scl_mvn_prefix}mvn(org.apache.felix:maven-bundle-plugin)
+BuildRequires:	%{?scl_prefix_maven}maven-local
+BuildRequires:	%{?scl_prefix_java_common}junit
+BuildRequires:	%{?scl_prefix_maven}mvn(org.apache.felix:maven-bundle-plugin)
 %{?scl:Requires: %scl_runtime}
 
-BuildArch:     noarch
+BuildArch:	noarch
 
 %description
 JSON.simple is a simple Java toolkit for JSON. You can use JSON.simple 
@@ -37,13 +37,12 @@ to encode or decode JSON text.
   * Both of the source code and the binary are JDK1.2 compatible 
 
 %package javadoc
-Summary:       API documentation for %{name}
+Summary:	API documentation for %{name}
 
 %description javadoc
 This package contains %{summary}.
 
 %prep
-%{?scl_enable}
 %setup -q -n json-simple-%{version}
 
 find . -name '*.jar' -exec rm -f '{}' \;
@@ -52,18 +51,19 @@ find . -type f -exec %{__sed} -i 's/\r//' {} \;
 
 %patch0 -p1
 
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_file : %{pkg_name}
-%{?scl_disable}
+%{?scl:EOF}
 
 %build
-%{?scl_enable}
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_build
-%{?scl_disable}
+%{?scl:EOF}
 
 %install
-%{?scl_enable}
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_install
-%{?scl_disable}
+%{?scl:EOF}
 
 %files -f .mfiles
 %doc AUTHORS.txt ChangeLog.txt LICENSE.txt README.txt
@@ -72,6 +72,9 @@ find . -type f -exec %{__sed} -i 's/\r//' {} \;
 %doc LICENSE.txt
 
 %changelog
+* Wed Oct 12 2016 Tomas Repik <trepik@redhat.com> - 1.1.1-15
+- use standard SCL macros
+
 * Wed Jul 27 2016 Tomas Repik <trepik@redhat.com> - 1.1.1-14
 - scl conversion
 
